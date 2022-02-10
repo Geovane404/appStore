@@ -44,4 +44,15 @@ public class UserService {
 		return new UserDTO(entity);
 	}
 
+	@Transactional
+	public UserDTO update(Long id, UserDTO dto) {
+		User entity = repository.findById(id).get();
+		entity.setName(dto.getName());
+		entity.setEmail(dto.getEmail());
+		entity.setPhone(dto.getPhone());
+
+		entity = repository.save(entity);
+		return new UserDTO(entity);
+	}
+
 }
