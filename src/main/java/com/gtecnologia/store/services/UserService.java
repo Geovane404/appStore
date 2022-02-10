@@ -55,4 +55,8 @@ public class UserService {
 		return new UserDTO(entity);
 	}
 
+	public void  delete(Long id) {
+		repository.deleteById(id);
+	}
+	
 }
