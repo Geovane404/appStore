@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gtecnologia.store.DTO.UserDTO;
 import com.gtecnologia.store.entities.User;
 import com.gtecnologia.store.repositories.UserRepository;
+import com.gtecnologia.store.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class UserService {
@@ -27,7 +28,7 @@ public class UserService {
 	@Transactional
 	public UserDTO findById(Long id) {
 		Optional<User> obj = repository.findById(id);
-		User entity = obj.get();
+		User entity = obj.orElseThrow(() -> new ResourceNotFoundException(id));
 		return new UserDTO(entity);
 	}
 
