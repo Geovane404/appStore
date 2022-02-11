@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.gtecnologia.store.services.exceptions.DatabaseIntegrityException;
 import com.gtecnologia.store.services.exceptions.ResourceNotFoundException;
 
 @ControllerAdvice
@@ -29,4 +30,18 @@ public class ResourceExceptionHandler {
 		return ResponseEntity.status(status).body(resp);
 	}
 	
+	@ExceptionHandler(DatabaseIntegrityException.class)
+	public ResponseEntity<StandardError> DatabaseIntegrity(DatabaseIntegrityException e, HttpServletRequest request ) {
+		String error = "Violação de integridade";
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+
+		StandardError resp = new StandardError();
+		resp.setTimestamp(Instant.now());
+		resp.setStatus(status.value());
+		resp.setError(error);
+		resp.setMessage(e.getMessage());
+		resp.setPath(request.getRequestURI());
+
+		return ResponseEntity.status(status).body(resp);
+	}
 }

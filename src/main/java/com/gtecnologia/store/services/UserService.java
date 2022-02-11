@@ -5,12 +5,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gtecnologia.store.DTO.UserDTO;
 import com.gtecnologia.store.entities.User;
 import com.gtecnologia.store.repositories.UserRepository;
+import com.gtecnologia.store.services.exceptions.DatabaseIntegrityException;
 import com.gtecnologia.store.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -56,8 +59,16 @@ public class UserService {
 		return new UserDTO(entity);
 	}
 
-	public void  delete(Long id) {
-		repository.deleteById(id);
+	public void delete(Long id) {
+		try {
+			repository.deleteById(id);
+		} 
+		catch (EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException(id);
+		} 
+		catch (DataIntegrityViolationException e) {
+			throw new DatabaseIntegrityException("Error: você não pode excluir um objeto que possui dependentes!");
+		}
+
 	}
-	
 }
