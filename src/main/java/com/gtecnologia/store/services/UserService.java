@@ -1,6 +1,7 @@
 package com.gtecnologia.store.services;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,13 +51,19 @@ public class UserService {
 
 	@Transactional
 	public UserDTO update(Long id, UserDTO dto) {
-		User entity = repository.findById(id).get();
-		entity.setName(dto.getName());
-		entity.setEmail(dto.getEmail());
-		entity.setPhone(dto.getPhone());
-
-		entity = repository.save(entity);
-		return new UserDTO(entity);
+		try {
+			User entity = repository.findById(id).get();
+			entity.setName(dto.getName());
+			entity.setEmail(dto.getEmail());
+			entity.setPhone(dto.getPhone());
+	
+			entity = repository.save(entity);
+			return new UserDTO(entity);
+		}
+		catch(NoSuchElementException e) {
+			throw new ResourceNotFoundException(id);
+		}
+		
 	}
 
 	public void delete(Long id) {
